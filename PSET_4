@@ -1,0 +1,81 @@
+1. (100 pts) Suppose you are interested in the relationship between state mortality rate and state spending on hospitals (and other health services). The zip file `state_data.zip` contains data sets on state mortality rate, state spending, state education level and state per capita income for several years. The data come from different sources such as the U.S. Census, the Bureau of Economic Analysis and the U.S. Mortality Database.
+
+Data files:
+   
+- `mortality_data.csv`
+
+- `income_data.csv`
+
+- education data 
+
+    - 1993 through 2006 in the folder `education`: `education_1993.csv`, `education_1994.csv`, ..., `education_2006.csv`
+
+    - 2007 through 2015: `education_0715.csv`
+
+- expenditures data in the folder `expenditure`: `expnd_1993.csv`, `expnd_1994.csv`, ..., `expnd_2015.csv`
+
+### Create a notebook which will implement the following tasks.
+
+1. Import the mortality dataset and name it `mort_data`. Keep only the observations for the years between 1993 and 2015.
+
+2. Change the column names for columns 4 through 11 to, `[mort_rate, prob_death, ave_length_surv, num_of_surv, num_of_deaths, num_years_lived, num_years_left, life_expec]`.
+
+3. `Age` column is a character type and must be changed to a numeric type. 
+
+    - Generate a new column, say `Age2`, by locating `"-"` in the character string, and then slicing the string from the first character to the character just before `"-"`. 
+    
+    - Convert `Age2` to a numeric type.
+
+4. Generate a new column, say `age_group` by cutting `Age2` to three intervals: `(0,18]`, `(18,64]`, `(64, max(Age2)]`. Use `pd.cut()` function and assign the labels  `"<=18"`, `"19-64"`, `">64"`.
+
+5. Drop `Age` and `Age2` columns, and reorder the columns as `[state, year, age_group, 8 mortality variables]`.
+
+6. Aggregate the mortality related variables (there are 8 of them) by taking the average over the groups of `[state, year, age_group]`. 
+
+    - Make sure that missing observations are not included in the calculation of the average.
+
+7. Take a look at the first five rows of the dataset using `head()`. 
+
+    - Notice that there is a problem with the state name Mississippi. It shows up as `"\ tMississippi"`. 
+    
+    - Change them to `"Mississippi"`, and sort the dataset by `state`, `year` and `age_group`.
+
+8. Import the `income` data set and name it `inc_data`. 
+
+    - Note that the data set is in the wide form and needs to be converted to the long form. 
+    
+    - You can use `pd.wide_to_long()` and set argument `stubnames` to the column names corresponding to multiple years in the wide form, and set argument `sep = "."`.
+
+9. Reset index for `inc_data`, and sort it by `state` and `year`.
+
+10. Append the education data sets from 1993 through 2006 and `education_0715`, name it `educ_data`. Rename columns 3 and 4 as `phs` and `pcoll`.
+
+11. Append the expenditure data sets from 1993 to 2015, and name it `expnd_data`. 
+
+    - Note that the columns may have been named slightly different for some years. 
+    
+    - Reset index for `expnd_data`, and sort it by `state` and `year`. 
+    
+    - Make sure that all expenditure variables are numeric type.
+
+12. Merge `inc_data` and `educ_data` by `state` and `year`, and name the merged data set `data`. Notice that this is a `one-to-one` merge.
+
+13. Merge `data` and `expnd_data` by `state` and `year`, and name the merged data set again `data`. Notice again that this is a `one-to-one` merge.
+
+14. Merge `mort_data` and `data` by `state` and `year`, and name the merged data set again `data`. Notice that this is a `many-to-one` merge.
+
+15. Remove `mort_data`, `inc_data`, `educ_data`, `expnd_data`.
+
+16. Change the measurement of `pinc`, `tot_revenue`, `taxes`, `tot_expnd`, `education`, `public_welfare`, `hospital`, `health` to in 1,000,000 dollars, i.e., divide each by `1e6`.
+
+17. Change the measurement of `mort_rate` to mortality rate per 10000 people, i.e., multiply `mort_rate` by `1e4`.
+
+18. Generate a table of descriptive statistics for your data set.
+
+19. Regress `mort_rate` on an `intercept`, `log(health)`, `log(hospital)`, `log(pinc)`, `phs` and `pcoll` for the age group `"19-64"`. Name the results `spec_1`.
+
+20. Regress `mort_rate` on an `intercept`, `log(health)`, `log(hospital)`, `log(pinc)`, `phs`, `pcoll` and `state dummies` for the age group `"19-64"`. Name the results `spec_2`.
+
+21. Regress `mort_rate` on an `intercept`, `log(health)`, `log(hospital)`, `log(pinc)`, `phs`, `pcoll`, `state dummies` and `year dummies` for the age group `"19-64"`. Name the results `spec_3`.
+
+22. Generate a table for the regression results using `stargazer`.
